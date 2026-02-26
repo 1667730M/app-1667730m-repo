@@ -1,0 +1,37 @@
+pipeline {
+    agent any
+
+    environment {
+        POLITE_ID = "1667730m"
+        UAT_PORT = "33100"
+    }
+
+    stages {
+
+        stage("Stage 1 - Preparation Check") {
+            steps {
+                echo "stg1_${POLITE_ID}: Preparation check passes"
+            }
+        }
+
+        stage("Stage 2 - UAT Web Test") {
+            steps {
+                sh '''
+                echo "Running web test..."
+
+                curl -Is http://localhost:${UAT_PORT} | head -n 1 > /tmp/testsvr-result-file
+
+                cat /tmp/testsvr-result-file
+
+                if grep -q "200" /tmp/testsvr-result-file; then
+                    echo "stg2_1667730m: testsvr's website is running"
+                else
+                    echo "stg2_1667730m: testsvr's website is down"
+                    exit 1
+                fi
+                '''
+            }
+        }
+
+    }
+}
