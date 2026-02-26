@@ -17,9 +17,12 @@ pipeline {
         stage("Stage 2 - UAT Web Test") {
             steps {
                 sh '''
-                echo "Running web test..."
+                curl -Is http://localhost:33100 | head -n 1 > /tmp/testsvr-result-file
 
-                curl -Is http://localhost:${UAT_PORT} | head -n 1 > /tmp/testsvr-result-file
+                if [ ! -f /tmp/testsvr-result-file ]; then
+                    echo "Result file not created"
+                    exit 1
+                fi
 
                 cat /tmp/testsvr-result-file
 
