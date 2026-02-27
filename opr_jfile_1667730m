@@ -66,9 +66,17 @@ pipeline {
                 # Clone repository
                 git clone https://github.com/1667730M/app-1667730m-repo.git;
 
+                targets="testsvr_1667730m.localdomain";
+                locate_script="${WORK_DIR}/app-1667730m-repo/opr_script_1667730m";
+
+                bolt script run \$locate_script \
+                    -t \$targets \
+                    -u clientadm \
+                    -p user123 \
+                    --no-host-key-check \
+                    --run-as root;
+
                 echo "stg3_${POLITE_ID}: testsvr is backup and updated"
-
-
                 """
             }
         }
