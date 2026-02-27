@@ -127,5 +127,44 @@ pipeline {
 
                 } 
             }
+            stage("stg6-1667730m") {
+                steps {
+                    script {
+                        sh '''
+                        echo "Running production web test..."
+
+                        curl -Is http://localhost:33200 | head -n 1 > /tmp/appsvr-result-file
+
+                        cat /tmp/appsvr-result-file
+                        '''
+
+                        def status = sh(
+                            script: "grep -q \"HTTP/1.1 200\" /tmp/appsvr-result-file",
+                            returnStatus: true
+                        )
+
+                        if (status == 0) {
+                            echo "stg6_${POLITE_ID}: appsvr website is operational"
+                        } else {
+                            def choice = input(
+                                message: "appsvr website is down. Select action:",
+                                parameters: [
+                                    choice(
+                                        name: 'ACTION',
+                                        choices: ['Trigger roll back', 'Troubleshooting'],
+                                        description: 'Choose recovery action'
+                                    )
+                                ]
+                            )
+
+                            if (choice == "Trigger roll back") {
+                                echo "stg6_${POLITE_ID}: Production website is rolling back"
+                            } else {
+                                echo "stg6_${POLITE_ID}: Troubleshooting of Production website starts"
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
