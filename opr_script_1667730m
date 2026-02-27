@@ -1,5 +1,8 @@
 #!/bin/bash
+#!/bin/bash
+set -e
 set -x
+
 echo "SCRIPT STARTED"
 
 WORK_DIR="/tmp/work/1667730m"
@@ -34,3 +37,4 @@ git clone https://github.com/1667730M/app-1667730m-repo.git;
 cp -p $WORK_DIR/app-1667730m-repo/new_1667730m_index.html /var/www/html/index.html;
 
 echo "Application deployed successfully inside container"
+echo "SCRIPT FINISHED"
