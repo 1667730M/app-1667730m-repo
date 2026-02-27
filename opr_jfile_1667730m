@@ -9,13 +9,13 @@ pipeline {
 
     stages {
 
-        stage("Stage 1 - Preparation Check") {
+        stage("stg1-1667730m") {
             steps {
                 echo "stg1_${POLITE_ID}: Preparation check passes"
             }
         }
 
-        stage("Stage 2 - UAT Web Test") {
+        stage("stg2-1667730m") {
             steps {
                 sh '''
                 echo "Running web test..."
@@ -36,7 +36,7 @@ pipeline {
                 input message: "Proceed to update testsvr server?", ok: "Proceed"
             }
         }
-        stage("Stage 3 - Backup and Update testsvr") {
+        stage("stg3-1667730m") {
             steps {
                 sh """
                 echo "stg3_${POLITE_ID}: Starting backup and update process"
