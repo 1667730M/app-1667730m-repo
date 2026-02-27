@@ -44,7 +44,7 @@ pipeline {
                 docker image rm -f testsvr_image || true
 
                 # Create new backup image for testsvr
-                docker commit testsvr testsvr_image
+                docker commit testsvr_1667730m testsvr_image
 
                 echo "Backup image testsvr_image created"
 
