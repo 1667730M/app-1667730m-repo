@@ -50,7 +50,11 @@ pipeline {
                 echo "Backup image testsvr_image created"
 
 
-                # Clean previous work directory
+
+                # Ensure parent directory exists
+                puppet resource file /tmp/work ensure=directory;
+
+                # Remove previous work dir if exists
                 puppet resource file ${WORK_DIR} ensure=absent force=true;
 
                 # Recreate work directory
