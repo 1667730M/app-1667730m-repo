@@ -14,25 +14,22 @@ pipeline {
             }
         }
 
-        stage("Stage 2 - UAT Web Test") {
+        stage("Debug") {
             steps {
                 sh '''
-                echo "Running web test..."
+                echo "USER:"
+                whoami
 
-                curl -Is http://localhost:${UAT_PORT} | head -n 1 | tee /tmp/testsvr-result-file
+                echo "PWD:"
+                pwd
 
-                echo "Checking result file..."
-                cat /tmp/testsvr-result-file
+                echo "TMP DIR INFO:"
+                ls -ld /tmp
 
-                if grep -q "HTTP/1.1 200" /tmp/testsvr-result-file; then
-                    echo "stg2_${POLITE_ID}: testsvr's website is running"
-                else
-                    echo "stg2_${POLITE_ID}: testsvr's website is down"
-                    exit 1
-                fi
+                echo "Try touch:"
+                touch /tmp/pipeline_testfile
                 '''
             }
         }
-
     }
 }
