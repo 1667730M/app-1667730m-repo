@@ -9,94 +9,113 @@ pipeline {
 
     stages {
 
-        stage("stg1-1667730m") {
-            steps {
-                echo "stg1_${POLITE_ID}: Preparation check passes"
+            stage("stg1-1667730m") {
+                steps {
+                    echo "stg1_${POLITE_ID}: Preparation check passes"
+                }
             }
-        }
 
-        stage("stg2-1667730m") {
-            steps {
-                sh '''
-                echo "Running web test..."
+            stage("stg2-1667730m") {
+                steps {
+                    sh '''
+                    echo "Running web test..."
 
-                curl -Is http://localhost:${UAT_PORT} | head -n 1 > /tmp/testsvr-result-file
+                    curl -Is http://localhost:${UAT_PORT} | head -n 1 > /tmp/testsvr-result-file
 
-                cat /tmp/testsvr-result-file
+                    cat /tmp/testsvr-result-file
 
-                if grep -q "HTTP/1.1 200" /tmp/testsvr-result-file; then
-                    echo "stg2_${POLITE_ID}: testsvr's website is running"
-                else
-                    echo "stg2_${POLITE_ID}: testsvr's website is down"
-                    exit 1
-                fi
-                '''
+                    if grep -q "HTTP/1.1 200" /tmp/testsvr-result-file; then
+                        echo "stg2_${POLITE_ID}: testsvr's website is running"
+                    else
+                        echo "stg2_${POLITE_ID}: testsvr's website is down"
+                        exit 1
+                    fi
+                    '''
 
-                // Prompt user only if previous check passed
-                input message: "Proceed to update testsvr server?", ok: "Proceed"
+                    // Prompt user only if previous check passed
+                    input message: "Proceed to update testsvr server?", ok: "Proceed"
+                }
             }
-        }
-        stage("stg3-1667730m") {
-            steps {
-                sh """
-                echo "stg3_${POLITE_ID}: Starting backup and update process"
+            stage("stg3-1667730m") {
+                steps {
+                    sh """
+                    echo "stg3_${POLITE_ID}: Starting backup and update process"
 
-                # Remove old backup image if exists
-                docker image rm -f testsvr_image || true
+                    # Remove old backup image if exists
+                    docker image rm -f testsvr_image || true
 
-                # Create new backup image for testsvr
-                docker commit testsvr_1667730m testsvr_image
+                    # Create new backup image for testsvr
+                    docker commit testsvr_1667730m testsvr_image
 
-                echo "Backup image testsvr_image created"
+                    echo "Backup image testsvr_image created"
 
 
-                # Ensure parent directory exists
-                puppet resource file /tmp/work ensure=directory;
+                    # Ensure parent directory exists
+                    puppet resource file /tmp/work ensure=directory;
 
-                # Remove previous work dir if exists
-                puppet resource file ${WORK_DIR} ensure=absent force=true;
+                    # Remove previous work dir if exists
+                    puppet resource file ${WORK_DIR} ensure=absent force=true;
 
-                # Recreate work directory
-                puppet resource file ${WORK_DIR} ensure=directory;
+                    # Recreate work directory
+                    puppet resource file ${WORK_DIR} ensure=directory;
 
-                # Move into work directory
-                cd ${WORK_DIR};
+                    # Move into work directory
+                    cd ${WORK_DIR};
 
-                # Clone repository
-                git clone https://github.com/1667730M/app-1667730m-repo.git;
+                    # Clone repository
+                    git clone https://github.com/1667730M/app-1667730m-repo.git;
 
-                targets="testsvr_1667730m.localdomain";
-                locate_script="${WORK_DIR}/app-1667730m-repo/opr_script_1667730m";
+                    targets="testsvr_1667730m.localdomain";
+                    locate_script="${WORK_DIR}/app-1667730m-repo/opr_script_1667730m";
 
-                bolt script run \$locate_script \
-                    -t \$targets \
-                    -u clientadm \
-                    -p user123 \
-                    --no-host-key-check \
-                    --run-as root;
+                    bolt script run \$locate_script \
+                        -t \$targets \
+                        -u clientadm \
+                        -p user123 \
+                        --no-host-key-check \
+                        --run-as root;
 
-                echo "stg3_${POLITE_ID}: testsvr is backup and updated"
-                """
+                    echo "stg3_${POLITE_ID}: testsvr is backup and updated"
+                    """
+                }
             }
-        }
-        stage("stg4-1667730m") {
-            steps {
-                sh '''
-                echo "Running post-update web test..."
+            stage("stg4-1667730m") {
+                steps {
+                    sh '''
+                    echo "Running post-update web test..."
 
-                curl -Is http://localhost:${UAT_PORT} | head -n 1 > /tmp/testsvr-result-file
+                    curl -Is http://localhost:${UAT_PORT} | head -n 1 > /tmp/testsvr-result-file
 
-                cat /tmp/testsvr-result-file
+                    cat /tmp/testsvr-result-file
 
-                if grep -q " 200 " /tmp/testsvr-result-file; then
-                    echo "stg4_${POLITE_ID}: testsvr’s website is running after update"
-                else
-                    echo "stg4_${POLITE_ID}: testsvr’s website is down"
-                    exit 1
-                fi
-                '''
+                    if grep -q " 200 " /tmp/testsvr-result-file; then
+                        echo "stg4_${POLITE_ID}: testsvr’s website is running after update"
+                    else
+                        echo "stg4_${POLITE_ID}: testsvr’s website is down"
+                        exit 1
+                    fi
+                    '''
 
-                input message: "Proceed to update appsvr server?", ok: "Proceed"
+                    input message: "Proceed to update appsvr server?", ok: "Proceed"
+                }
+            }
+            stage("stg5-1667730m") {
+                steps {
+                    sh """
+                    echo "stg5_${POLITE_ID}: Starting backup and update process"
+
+                    # Remove old backup image if exists
+                    docker image rm -f appsvr_image || true
+
+                    # Create new backup image for testsvr
+                    docker commit appsvr_1667730m appsvr_image
+
+                    echo "Backup image appsvr_image created"
+
+                    echo "stg5_${POLITE_ID}: appsvr web server is backup and updated"
+                    """
+
+                } 
             }
         }
     }
