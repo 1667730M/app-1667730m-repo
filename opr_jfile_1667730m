@@ -17,19 +17,17 @@ pipeline {
         stage("Stage 2 - UAT Web Test") {
             steps {
                 sh '''
-                curl -Is http://localhost:33100 | head -n 1 > /tmp/testsvr-result-file
+                echo "Running web test..."
 
-                if [ ! -f /tmp/testsvr-result-file ]; then
-                    echo "Result file not created"
-                    exit 1
-                fi
+                curl -Is http://localhost:${UAT_PORT} | head -n 1 | tee /tmp/testsvr-result-file
 
+                echo "Checking result file..."
                 cat /tmp/testsvr-result-file
 
-                if grep -q "200" /tmp/testsvr-result-file; then
-                    echo "stg2_1667730m: testsvr's website is running"
+                if grep -q "HTTP/1.1 200" /tmp/testsvr-result-file; then
+                    echo "stg2_${POLITE_ID}: testsvr's website is running"
                 else
-                    echo "stg2_1667730m: testsvr's website is down"
+                    echo "stg2_${POLITE_ID}: testsvr's website is down"
                     exit 1
                 fi
                 '''
