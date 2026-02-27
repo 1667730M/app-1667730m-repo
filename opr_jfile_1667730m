@@ -4,6 +4,7 @@ pipeline {
     environment {
         POLITE_ID = "1667730m"
         UAT_PORT = "33100"
+        WORK_DIR = "/tmp/work/1667730m"
     }
 
     stages {
@@ -49,17 +50,14 @@ pipeline {
                 echo "Backup image testsvr_image created"
 
 
-                # Define work directory
-                WORK_DIR="/tmp/work/1667730m"
-
                 # Clean previous work directory
-                puppet resource file $WORK_DIR ensure=absent force=true;
+                puppet resource file ${WORK_DIR} ensure=absent force=true;
 
                 # Recreate work directory
-                puppet resource file $WORK_DIR ensure=directory;
+                puppet resource file ${WORK_DIR} ensure=directory;
 
                 # Move into work directory
-                cd $WORK_DIR;
+                cd ${WORK_DIR};
 
                 # Clone repository
                 git clone https://github.com/1667730M/app-1667730m-repo.git;
