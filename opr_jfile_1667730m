@@ -49,23 +49,6 @@ pipeline {
 
                 echo "Backup image testsvr_image created"
 
-
-
-                # Ensure parent directory exists
-                puppet resource file /tmp/work ensure=directory;
-
-                # Remove previous work dir if exists
-                puppet resource file ${WORK_DIR} ensure=absent force=true;
-
-                # Recreate work directory
-                puppet resource file ${WORK_DIR} ensure=directory;
-
-                # Move into work directory
-                cd ${WORK_DIR};
-
-                # Clone repository
-                git clone https://github.com/1667730M/app-1667730m-repo.git;
-
                 targets="testsvr_1667730m.localdomain";
                 locate_script="${WORK_DIR}/app-1667730m-repo/opr_script_1667730m";
 
