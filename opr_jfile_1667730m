@@ -40,15 +40,15 @@ pipeline {
                 sh """
                 echo "stg3_${POLITE_ID}: Starting backup and update process"
 
-                // Remove old backup image if exists
+                # Remove old backup image if exists
                 docker image rm -f testsvr_image || true
 
-                // Create new backup image for testsvr
+                # Create new backup image for testsvr
                 docker commit testsvr testsvr_image
 
                 echo "Backup image testsvr_image created"
 
-                // Update testsvr web server using bolt
+                # Update testsvr web server using bolt
                 bolt command run "echo '<html><body>Updated</body></html>' > /var/www/html/index.html" --targets testsvr
 
                 echo "stg3_${POLITE_ID}: testsvr is backup and updated"
