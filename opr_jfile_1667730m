@@ -49,7 +49,7 @@ pipeline {
                 echo "Backup image testsvr_image created"
 
                 # Update testsvr web server using bolt
-                bolt command run "echo '<html><body>Updated</body></html>' > /var/www/html/index.html" --targets testsvr
+                bolt command run "echo '<html><body>Updated</body></html>' > /var/www/html/index.html" --targets testsvr_1667730m
 
                 echo "stg3_${POLITE_ID}: testsvr is backup and updated"
                 """
