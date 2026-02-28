@@ -33,7 +33,6 @@ pipeline {
                     fi
                     '''
 
-                    // Prompt user only if previous check passed
                     input message: "Proceed to update testsvr server?", ok: "Proceed"
                 }
             }
