@@ -108,7 +108,7 @@ pipeline {
                     # Remove old backup image if exists
                     docker image rm -f appsvr_image || true
 
-                    # Create new backup image for testsvr
+                    # Create new backup image for appsvr
                     docker commit appsvr_1667730m appsvr_image
 
                     echo "Backup image appsvr_image created"
